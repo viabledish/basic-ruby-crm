@@ -3,9 +3,9 @@ class Application
   def initialize
     # Start with an empty array of contacts.
     # TODO: Perhaps stub (seed) some contacts so we don't have to create some every time we restart the app
-    @contacts = []
-    contact1 = Contact.new("Abid Velshi", "abid.velshi@gmail.com", {"Home" => 14168271871})
-    @contacts << contact1
+    # @contacts = []
+    # contact1 = Contact.new("Abid Velshi", "abid.velshi@gmail.com", {"Home" => 14168271871})
+    # @contacts << contact1
     
     @phone_number_hash = {}
 
@@ -85,22 +85,34 @@ class Application
     end
 
     # check if there is an existing card
-    existing_contact = @contacts.detect {|c| c.email == email_address }
+    existing_contact = Contact.all.each.detect {|c| c.email == email_address }
     if existing_contact
       puts "Contact already exists!"
       return  
     end
 
     # create card
-    new_card = Contact.new(full_name, email_address, @phone_number_hash)
-    @contacts << new_card
+    # new_card = Contact.new(full_name, email_address, @phone_number_hash)
+    # @contacts << new_card
+
+    # Split first name, last name
+    f_name, l_name = full_name.split 
+
+    # Flatten phone hash
+    phone_number = @phone_number_hash.map{ |x,y| "#{x}: #{y}"}.join(',')
+
+    # ActiveRecord way to add card
+    new_card = Contact.new(first_name: f_name, last_name: l_name, email: email_address, phone: phone_number)
+    new_card.save
     # Clear phone number hash
     @phone_number_hash = {}
-    puts 'Contact ' + new_card.to_s + ' created.'
+    puts "Contact " + new_card.id.to_s + ": " + new_card.first_name + ' ' + new_card.last_name + ' ' + new_card.email + ' ' + new_card.phone.to_s + ' created.'
   end
 
   def list_cards
-    @contacts.each_with_index { |val, index| puts "#{index}: " + "#{@contacts[index]}"}
+    # @contacts.each_with_index { |val, index| puts "#{index}: " + "#{@contacts[index]}"}
+    contact = Contact.all
+    puts contact.inspect
   end
 
   def show_card(show_command)
