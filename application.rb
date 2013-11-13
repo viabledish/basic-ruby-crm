@@ -7,6 +7,8 @@ class Application
     contact1 = Contact.new("Abid Velshi", "abid.velshi@gmail.com", {"Home" => 14168271871})
     @contacts << contact1
     
+    @phone_number_hash = {}
+
     @exit_cmd = 'exit'
     @new_cmd = 'new'
     @list_cmd = 'list'
@@ -39,9 +41,9 @@ class Application
             begin
               edit_mode = gets.chomp
               if (edit_mode == @edit_name_cmd)
-                edit_name
+                edit_name(show_cmd)
               elsif (edit_mode == @edit_email_cmd)
-                edit_email
+                edit_email(show_cmd)
               else
                 puts 'Please enter a valid command'
               end
@@ -61,7 +63,6 @@ class Application
 
   # Creates a new card
   def create_new_card(new_command)
-    phone_number_hash = {}
     puts "Enter a first and last name"
     full_name = gets.chomp
     puts "Enter an email address"
@@ -69,15 +70,7 @@ class Application
     puts "Would you like to add a phone number"
     user_response_phone = gets.chomp
     if (user_response_phone == 'yes')
-      begin
-        puts "Enter a phone number location"
-        phone_number_location = gets.chomp
-        puts "Enter a phone number (digits only)"
-        phone_number = gets.chomp
-        phone_number_hash[phone_number_location] = phone_number
-        puts "Would you like to enter another?"
-        user_response_phone = gets.chomp
-      end while (user_response_phone != 'no')
+      add_phone_number
     end
 
     # check if there is an existing card
@@ -88,9 +81,10 @@ class Application
     end
 
     # create card
-    
-    new_card = Contact.new(full_name, email_address, phone_number_hash)
+    new_card = Contact.new(full_name, email_address, @phone_number_hash)
     @contacts << new_card
+    # Clear phone number hash
+    @phone_number_hash = {}
     puts 'Contact ' + new_card.to_s + ' created.'
   end
 
@@ -107,29 +101,32 @@ class Application
       end
   end
 
-  def edit_name
-    puts 'Please enter the index of the name you want to edit'
-    edit_index = gets.chomp
+  def edit_name(show_command)
+    card_index = (show_command.split(' '))[1]
     puts 'Please enter the new name'
     new_name = gets.chomp
-    @contacts[edit_index.to_i].edit_contact_name(new_name)
-    puts "New record: #{@contacts[edit_index.to_i]}:"
+    @contacts[card_index.to_i].edit_contact_name(new_name)
+    puts "New record: #{@contacts[card_index.to_i]}:"
   end
 
-  def edit_email
-    puts 'Please enter the index of the email you want to edit'
-    edit_index = gets.chomp
+  def edit_email(show_command)
+    card_index = (show_command.split(' '))[1]
     puts 'Please enter the new email address'
     new_email = gets.chomp
-    @contacts[edit_index.to_i].edit_contact_email(new_email)
-    puts "New record: #{@contacts[edit_index.to_i]}:"
+    @contacts[card_index.to_i].edit_contact_email(new_email)
+    puts "New record: #{@contacts[card_index.to_i]}:"
   end
 
   def add_phone_number
-    puts "Enter a phone number location"
-    phone_number_location = gets.chomp
-    puts "Enter a phone number (digits only)"
-    phone_number = gets.chomp
+    begin
+      puts "Enter a phone number location"
+      phone_number_location = gets.chomp
+      puts "Enter a phone number (digits only)"
+      phone_number = gets.chomp
+      @phone_number_hash[phone_number_location] = phone_number
+      puts "Would you like to enter another?"
+      user_response_phone = gets.chomp
+    end while (user_response_phone != 'no')
   end
  
 end
