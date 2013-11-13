@@ -44,6 +44,8 @@ class Application
                 edit_name(show_cmd)
               elsif (edit_mode == @edit_email_cmd)
                 edit_email(show_cmd)
+              elsif (edit_mode == @edit_phone_cmd)
+                add_phone_number( show_cmd )
               else
                 puts 'Please enter a valid command'
               end
@@ -70,7 +72,7 @@ class Application
     puts "Would you like to add a phone number"
     user_response_phone = gets.chomp
     if (user_response_phone == 'yes')
-      add_phone_number
+      add_phone_number( nil )
     end
 
     # check if there is an existing card
@@ -117,13 +119,19 @@ class Application
     puts "New record: #{@contacts[card_index.to_i]}:"
   end
 
-  def add_phone_number
+  def add_phone_number(show_command)
     begin
       puts "Enter a phone number location"
       phone_number_location = gets.chomp
       puts "Enter a phone number (digits only)"
       phone_number = gets.chomp
-      @phone_number_hash[phone_number_location] = phone_number
+      if (show_command == nil)
+        @phone_number_hash[phone_number_location] = phone_number
+      else
+        card_index = (show_command.split(' '))[1]
+        @contacts[card_index.to_i].phone[phone_number_location] = phone_number
+      end
+      "Phone Number Added"
       puts "Would you like to enter another?"
       user_response_phone = gets.chomp
     end while (user_response_phone != 'no')
