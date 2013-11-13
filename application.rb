@@ -4,7 +4,7 @@ class Application
     # Start with an empty array of contacts.
     # TODO: Perhaps stub (seed) some contacts so we don't have to create some every time we restart the app
     @contacts = []
-    contact1 = Contact.new("Abid Velshi", "abid.velshi@gmail.com")
+    contact1 = Contact.new("Abid Velshi", "abid.velshi@gmail.com", {"Home" => 14168271871})
     @contacts << contact1
     
     @exit_cmd = 'exit'
@@ -14,6 +14,7 @@ class Application
     @edit_phone_cmd = 'edit phone'
     @edit_email_cmd = 'edit email'
     @back_cmd = 'back'
+    @phone_cmd = 'phone'
 
   end
  
@@ -55,16 +56,29 @@ class Application
     puts " new      - Create a new contact"
     puts " list     - List all contacts"
     puts " show :id - Display contact details"
-    puts " add phone number"
     print "> "
   end
 
   # Creates a new card
   def create_new_card(new_command)
+    phone_number_hash = {}
     puts "Enter a first and last name"
     full_name = gets.chomp
     puts "Enter an email address"
     email_address = gets.chomp
+    puts "Would you like to add a phone number"
+    user_response_phone = gets.chomp
+    if (user_response_phone == 'yes')
+      begin
+        puts "Enter a phone number location"
+        phone_number_location = gets.chomp
+        puts "Enter a phone number (digits only)"
+        phone_number = gets.chomp
+        phone_number_hash[phone_number_location] = phone_number
+        puts "Would you like to enter another?"
+        user_response_phone = gets.chomp
+      end while (user_response_phone != 'no')
+    end
 
     # check if there is an existing card
     existing_contact = @contacts.detect {|c| c.email == email_address }
@@ -74,7 +88,8 @@ class Application
     end
 
     # create card
-    new_card = Contact.new(full_name, email_address)
+    
+    new_card = Contact.new(full_name, email_address, phone_number_hash)
     @contacts << new_card
     puts 'Contact ' + new_card.to_s + ' created.'
   end
@@ -108,6 +123,13 @@ class Application
     new_email = gets.chomp
     @contacts[edit_index.to_i].edit_contact_email(new_email)
     puts "New record: #{@contacts[edit_index.to_i]}:"
+  end
+
+  def add_phone_number
+    puts "Enter a phone number location"
+    phone_number_location = gets.chomp
+    puts "Enter a phone number (digits only)"
+    phone_number = gets.chomp
   end
  
 end
