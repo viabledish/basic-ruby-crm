@@ -9,6 +9,15 @@ class Contact
     @last_name = name.split(' ')[1]
     @email = email
   end
+
+  def edit_contact_name(name)
+  	@first_name = name.split(' ')[0]
+    @last_name = name.split(' ')[1]
+  end
+
+  def edit_contact_email(email)
+  	@email = email
+  end
   
   def to_s
     @first_name + ' ' + @last_name + ' (' + @email + ')'

@@ -33,11 +33,18 @@ class Application
           
           when (show_cmd)
             show_card(show_cmd)
-            input = gets.chomp
+            puts "You are now in edit mode"
             begin
-              edit_card
-            end while (input != @back_cmd)
-          end
+              edit_mode = gets.chomp
+              if (edit_mode == 'edit name')
+                edit_name
+              elsif (edit_mode == 'edit email')
+                edit_email
+              else
+                puts 'Please enter a valid command'
+              end
+            end while (edit_mode != @back_cmd)
+        end      
     end while (input != @exit_cmd)
   end
   
@@ -75,7 +82,6 @@ class Application
   end
 
   def show_card(show_command)
-    puts "Remember, the index starts at 0!"
     card_index = (show_command.split(' '))[1]
       if (@contacts[card_index.to_i] == nil)
         puts "The card does not exist!"
@@ -84,8 +90,22 @@ class Application
       end
   end
 
-  def edit_card
-    puts "edit!"
+  def edit_name
+    puts 'Please enter the index of the name you want to edit'
+    edit_index = gets.chomp
+    puts 'Please enter the new name'
+    new_name = gets.chomp
+    @contacts[edit_index.to_i].edit_contact_name(new_name)
+    puts "New record: #{@contacts[edit_index.to_i]}:"
+  end
+
+  def edit_email
+    puts 'Please enter the index of the email you want to edit'
+    edit_index = gets.chomp
+    puts 'Please enter the new email address'
+    new_email = gets.chomp
+    @contacts[edit_index.to_i].edit_contact_email(new_email)
+    puts "New record: #{@contacts[edit_index.to_i]}:"
   end
  
 end
