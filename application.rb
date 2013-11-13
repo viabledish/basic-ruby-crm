@@ -12,6 +12,7 @@ class Application
     @list_cmd = 'list'
     @edit_name_cmd = 'edit name'
     @edit_phone_cmd = 'edit phone'
+    @edit_email_cmd = 'edit email'
     @back_cmd = 'back'
 
   end
@@ -36,9 +37,9 @@ class Application
             puts "You are now in edit mode"
             begin
               edit_mode = gets.chomp
-              if (edit_mode == 'edit name')
+              if (edit_mode == @edit_name_cmd)
                 edit_name
-              elsif (edit_mode == 'edit email')
+              elsif (edit_mode == @edit_email_cmd)
                 edit_email
               else
                 puts 'Please enter a valid command'
@@ -54,6 +55,7 @@ class Application
     puts " new      - Create a new contact"
     puts " list     - List all contacts"
     puts " show :id - Display contact details"
+    puts " add phone number"
     print "> "
   end
 
