@@ -13,7 +13,7 @@ class Application
     @new_cmd = 'new'
     @list_cmd = 'list'
     @edit_name_cmd = 'edit name'
-    @edit_phone_cmd = 'edit phone'
+    @add_phone_cmd = 'add phone'
     @edit_email_cmd = 'edit email'
     @back_cmd = 'back'
     @phone_cmd = 'phone'
@@ -37,14 +37,14 @@ class Application
           
           when (show_cmd)
             show_card(show_cmd)
-            puts "You are now in edit mode"
+            show_edit_menu
             begin
               edit_mode = gets.chomp
               if (edit_mode == @edit_name_cmd)
                 edit_name(show_cmd)
               elsif (edit_mode == @edit_email_cmd)
                 edit_email(show_cmd)
-              elsif (edit_mode == @edit_phone_cmd)
+              elsif (edit_mode == @add_phone_cmd)
                 add_phone_number( show_cmd )
               else
                 puts 'Please enter a valid command'
@@ -56,10 +56,19 @@ class Application
   
   # Prints the main menu only
   def show_main_menu
-    puts "Welcome to the app. What's next?"
+    puts " Welcome to the app. What's next?"
     puts " new      - Create a new contact"
     puts " list     - List all contacts"
     puts " show :id - Display contact details"
+    print "> "
+  end
+
+  # Prints the edit menu only
+  def show_edit_menu
+    puts " You are now in edit mode"
+    puts " edit name      - edit the name of this contact"
+    puts " edit email     - edit the email of this contact"
+    puts " add phone      - add a phone number to this contact"
     print "> "
   end
 
@@ -119,6 +128,7 @@ class Application
     puts "New record: #{@contacts[card_index.to_i]}:"
   end
 
+  #What is the way to allow this method to take 0 or 1 arguments?
   def add_phone_number(show_command)
     begin
       puts "Enter a phone number location"
