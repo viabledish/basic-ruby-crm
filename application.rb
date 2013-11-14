@@ -23,6 +23,8 @@ class Application
           show_cmd = input
         elsif (input.start_with?"delete")
           delete_cmd = input
+        elsif (input.start_with?"find")
+          find_cmd = input
         end 
 
         case input
@@ -37,6 +39,9 @@ class Application
 
           when (delete_cmd)
             delete_card(delete_cmd)
+
+          when (find_cmd)
+            find_contact(find_cmd)
           
           when (show_cmd)
             show_card(show_cmd)
@@ -50,6 +55,8 @@ class Application
               elsif (edit_mode == @add_phone_cmd)
                 card_index = (show_cmd.split(' '))[1]
                 add_phone_number_to_record(card_index)
+              elsif (edit_mode == @edit_important_cmd)
+                edit_importance(show_cmd)
                 
               else
                 puts 'Please enter a valid command'
@@ -67,15 +74,17 @@ class Application
     puts " list important     - List all contacts"
     puts " show :id           - Display contact details"
     puts " delete             - Delete an entry"
+    puts " find               - Find an entry"
     print "> "
   end
 
   # Prints the edit menu only
   def show_edit_menu
     puts " You are now in edit mode"
-    puts " edit name      - edit the name of this contact"
-    puts " edit email     - edit the email of this contact"
-    puts " add phone      - add a phone number to this contact"
+    puts " edit name       - edit the name of this contact"
+    puts " edit email      - edit the email of this contact"
+    puts " add phone       - add a phone number to this contact"
+    puts " edit importance - edit the importance of this contact"
     print "> "
   end
 
@@ -158,6 +167,16 @@ class Application
     puts "Updated record: #{card.id}: #{card.email}"
   end
 
+  def edit_importance(show_command)
+    card_index = (show_command.split(' '))[1]
+    puts 'Please enter the new level of importance'
+    new_importance = gets.chomp
+    card = Contact.find_by(id: card_index)
+    card.importance = new_importance
+    card.save
+    puts "Updated record: #{card.id}: #{card.importance}"
+  end
+
   #What is the way to allow this method to take 0 or 1 arguments?
   def add_phone_number
     phone_number_hash = {}
@@ -186,6 +205,15 @@ class Application
     important_cards = Contact.where("importance != 'nil'").order('importance DESC')
       important_cards.each do |contact|
         record = contact.first_name.to_s + ' ' + contact.last_name.to_s + ' ' + contact.importance.to_s
+        puts record
+      end
+  end
+
+  def find_contact(find_command)
+    search_term = (find_command.split(' '))[1]
+    found_cards = Contact.where(["first_name LIKE :fname OR email LIKE :email", {:fname => "%#{search_term}%", :email => "%#{search_term}%"}])
+      found_cards.each do |contact|
+        record = contact.first_name.to_s + ' ' + contact.last_name.to_s + ' ' + contact.email.to_s
         puts record
       end
   end
