@@ -1,13 +1,6 @@
 class Application
  
   def initialize
-    # Start with an empty array of contacts.
-    # TODO: Perhaps stub (seed) some contacts so we don't have to create some every time we restart the app
-    # @contacts = []
-    # contact1 = Contact.new("Abid Velshi", "abid.velshi@gmail.com", {"Home" => 14168271871})
-    # @contacts << contact1
-    
-    @phone_number_hash = {}
 
     @exit_cmd = 'exit'
     @new_cmd = 'new'
@@ -26,7 +19,9 @@ class Application
         input = gets.chomp
         if (input.start_with?"show")
           show_cmd = input
-        end
+        elsif (input.start_with?"delete")
+          delete_cmd = input
+        end 
 
         case input
           when (@new_cmd)
@@ -34,6 +29,9 @@ class Application
 
           when (@list_cmd)
             list_cards
+
+          when (delete_cmd)
+            delete_card
           
           when (show_cmd)
             show_card(show_cmd)
@@ -45,7 +43,9 @@ class Application
               elsif (edit_mode == @edit_email_cmd)
                 edit_email(show_cmd)
               elsif (edit_mode == @add_phone_cmd)
-                add_phone_number( show_cmd )
+                card_index = (show_cmd.split(' '))[1]
+                add_phone_number_to_record(card_index)
+                
               else
                 puts 'Please enter a valid command'
               end
@@ -60,6 +60,7 @@ class Application
     puts " new      - Create a new contact"
     puts " list     - List all contacts"
     puts " show :id - Display contact details"
+    puts " delete   - Delete an entry"
     print "> "
   end
 
@@ -81,7 +82,7 @@ class Application
     puts "Would you like to add a phone number"
     user_response_phone = gets.chomp
     if (user_response_phone == 'yes')
-      add_phone_number( nil )
+      phone_number_string = add_phone_number
     end
 
     # check if there is an existing card
@@ -91,72 +92,83 @@ class Application
       return  
     end
 
-    # create card
-    # new_card = Contact.new(full_name, email_address, @phone_number_hash)
-    # @contacts << new_card
-
     # Split first name, last name
     f_name, l_name = full_name.split 
 
-    # Flatten phone hash
-    phone_number = @phone_number_hash.map{ |x,y| "#{x}: #{y}"}.join(',')
-
-    # ActiveRecord way to add card
-    new_card = Contact.new(first_name: f_name, last_name: l_name, email: email_address, phone: phone_number)
+    # Add card to ActiveRecord
+    new_card = Contact.new(first_name: f_name, last_name: l_name, email: email_address, phone: phone_number_string)
     new_card.save
-    # Clear phone number hash
-    @phone_number_hash = {}
     puts "Contact " + new_card.id.to_s + ": " + new_card.first_name + ' ' + new_card.last_name + ' ' + new_card.email + ' ' + new_card.phone.to_s + ' created.'
   end
 
   def list_cards
-    # @contacts.each_with_index { |val, index| puts "#{index}: " + "#{@contacts[index]}"}
-    contact = Contact.all
-    puts contact.inspect
+    contact_list = Contact.all
+    puts contact_list.inspect
   end
 
   def show_card(show_command)
     card_index = (show_command.split(' '))[1]
-      if (@contacts[card_index.to_i] == nil)
+      if (Contact.find_by(id: card_index) == nil)
         puts "The card does not exist!"
       else
-        puts "#{card_index}: " + "#{@contacts[card_index.to_i]}"
+        card = Contact.find_by(id: card_index)
+        puts "#{card_index}: " + "#{card.first_name} #{card.last_name}"
       end
+  end
+
+  def delete_card
+    puts "Delete!"
   end
 
   def edit_name(show_command)
     card_index = (show_command.split(' '))[1]
     puts 'Please enter the new name'
     new_name = gets.chomp
-    @contacts[card_index.to_i].edit_contact_name(new_name)
-    puts "New record: #{@contacts[card_index.to_i]}:"
+    card = Contact.find_by(id: card_index)
+    f_name, l_name = new_name.split
+    card.first_name = f_name
+    card.last_name = l_name
+    card.save
+    puts "Updated record: #{card.id}: #{card.first_name} #{card.last_name}"
   end
 
   def edit_email(show_command)
+    #Find alternate solution here
     card_index = (show_command.split(' '))[1]
     puts 'Please enter the new email address'
     new_email = gets.chomp
-    @contacts[card_index.to_i].edit_contact_email(new_email)
-    puts "New record: #{@contacts[card_index.to_i]}:"
+    card = Contact.find_by(id: card_index)
+    card.email = new_email
+    card.save
+    puts "Updated record: #{card.id}: #{card.email}"
   end
 
   #What is the way to allow this method to take 0 or 1 arguments?
-  def add_phone_number(show_command)
+  def add_phone_number
+    phone_number_hash = {}
     begin
       puts "Enter a phone number location"
       phone_number_location = gets.chomp
       puts "Enter a phone number (digits only)"
       phone_number = gets.chomp
-      if (show_command == nil)
-        @phone_number_hash[phone_number_location] = phone_number
-      else
-        card_index = (show_command.split(' '))[1]
-        @contacts[card_index.to_i].phone[phone_number_location] = phone_number
-      end
-      "Phone Number Added"
+      phone_number_hash[phone_number_location] = phone_number
+      puts "Phone Number Added"
       puts "Would you like to enter another?"
       user_response_phone = gets.chomp
     end while (user_response_phone != 'no')
+    return flatten_phone_hash(phone_number_hash)
+  end
+
+  def add_phone_number_to_record( card_index )
+    phone_number_string = add_phone_number
+    card = Contact.find_by(id: card_index)
+    card.phone = card.phone + ' ' + phone_number_string
+    card.save
+    puts "Phone number(s) added"
+  end
+
+  def flatten_phone_hash(phone_number_hash)
+    phone_number_hash.map{ |x,y| "#{x}: #{y}"}.join(',')
   end
  
 end
