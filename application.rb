@@ -103,19 +103,24 @@ class Application
     end
 
     # check if there is an existing card
-    existing_contact = Contact.all.each.detect {|c| c.email == email_address }
-    if existing_contact
-      puts "Contact already exists!"
-      return  
-    end
+    # existing_contact = Contact.all.each.detect {|c| c.email == email_address }
+    # if existing_contact
+    #   puts "Contact already exists!"
+    #   return  
+    # end
 
     # Split first name, last name
     f_name, l_name = full_name.split 
 
     # Add card to ActiveRecord
     new_card = Contact.new(first_name: f_name, last_name: l_name, email: email_address, phone: phone_number_string, importance: importance_rating)
-    new_card.save
-    puts "Contact " + new_card.id.to_s + ": " + new_card.first_name + ' ' + new_card.last_name + ' ' + new_card.email + ' ' + new_card.phone.to_s + ' created.'
+    if (new_card.save == true)
+      puts "Contact " + new_card.id.to_s + ": " + new_card.first_name + ' ' + new_card.last_name + ' ' + new_card.email + ' ' + new_card.phone.to_s + ' created.'
+    else
+      new_card.errors.each do |error|
+        puts error.to_s
+      end
+    end
   end
 
   def list_cards
@@ -163,8 +168,11 @@ class Application
     new_email = gets.chomp
     card = Contact.find_by(id: card_index)
     card.email = new_email
-    card.save
-    puts "Updated record: #{card.id}: #{card.email}"
+    if (card.save == true)
+      puts "Updated record: #{card.id}: #{card.email}"
+    else
+      puts "Email exists!"
+    end
   end
 
   def edit_importance(show_command)

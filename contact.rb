@@ -1,4 +1,7 @@
 class Contact < ActiveRecord::Base
+
+  validates :email,       presence: true, uniqueness: { case_sensitive: false }
+  validates :importance,  numericality: { only_integer: true }
   
   # attr_accessor :first_name
   # attr_accessor :last_name
@@ -12,14 +15,14 @@ class Contact < ActiveRecord::Base
   #   @phone = phone
   # end
 
-  def edit_contact_name(name)
-  	@first_name = name.split(' ')[0]
-    @last_name = name.split(' ')[1]
-  end
+  # def edit_contact_name(name)
+  # 	@first_name = name.split(' ')[0]
+  #   @last_name = name.split(' ')[1]
+  # end
 
-  def edit_contact_email(email)
-  	@email = email
-  end
+  # def edit_contact_email(email)
+  # 	@email = email
+  # end
   
   # def to_s
   # 	phone_numbers = @phone.each { |x, y| puts "#{x}: #{y}"}
