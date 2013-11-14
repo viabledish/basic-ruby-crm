@@ -5,9 +5,11 @@ class Application
     @exit_cmd = 'exit'
     @new_cmd = 'new'
     @list_cmd = 'list'
+    @list_most_cmd = 'list important'
     @edit_name_cmd = 'edit name'
     @add_phone_cmd = 'add phone'
     @edit_email_cmd = 'edit email'
+    @edit_important_cmd = 'edit importance'
     @back_cmd = 'back'
     @phone_cmd = 'phone'
 
@@ -30,8 +32,11 @@ class Application
           when (@list_cmd)
             list_cards
 
+          when (@list_most_cmd)
+            list_most_important
+
           when (delete_cmd)
-            delete_card
+            delete_card(delete_cmd)
           
           when (show_cmd)
             show_card(show_cmd)
@@ -57,10 +62,11 @@ class Application
   # Prints the main menu only
   def show_main_menu
     puts " Welcome to the app. What's next?"
-    puts " new      - Create a new contact"
-    puts " list     - List all contacts"
-    puts " show :id - Display contact details"
-    puts " delete   - Delete an entry"
+    puts " new                - Create a new contact"
+    puts " list               - List all contacts"
+    puts " list important     - List all contacts"
+    puts " show :id           - Display contact details"
+    puts " delete             - Delete an entry"
     print "> "
   end
 
@@ -75,6 +81,8 @@ class Application
 
   # Creates a new card
   def create_new_card(new_command)
+    puts "What importance do you want to give this contact (1 - 5)"
+    importance_rating = gets.chomp
     puts "Enter a first and last name"
     full_name = gets.chomp
     puts "Enter an email address"
@@ -96,7 +104,7 @@ class Application
     f_name, l_name = full_name.split 
 
     # Add card to ActiveRecord
-    new_card = Contact.new(first_name: f_name, last_name: l_name, email: email_address, phone: phone_number_string)
+    new_card = Contact.new(first_name: f_name, last_name: l_name, email: email_address, phone: phone_number_string, importance: importance_rating)
     new_card.save
     puts "Contact " + new_card.id.to_s + ": " + new_card.first_name + ' ' + new_card.last_name + ' ' + new_card.email + ' ' + new_card.phone.to_s + ' created.'
   end
@@ -116,8 +124,15 @@ class Application
       end
   end
 
-  def delete_card
-    puts "Delete!"
+  def delete_card(delete_command)
+    card_index = (delete_command.split(' '))[1]
+      if (Contact.find_by(id: card_index) == nil)
+        puts "The card does not exist!"
+      else
+        card = Contact.find_by(id: card_index)
+        card.destroy
+        puts "Record 3 no longer exists!"
+      end
   end
 
   def edit_name(show_command)
@@ -165,6 +180,14 @@ class Application
     card.phone = card.phone + ' ' + phone_number_string
     card.save
     puts "Phone number(s) added"
+  end
+
+  def list_most_important
+    important_cards = Contact.where("importance != 'nil'").order('importance DESC')
+      important_cards.each do |contact|
+        record = contact.first_name.to_s + ' ' + contact.last_name.to_s + ' ' + contact.importance.to_s
+        puts record
+      end
   end
 
   def flatten_phone_hash(phone_number_hash)
