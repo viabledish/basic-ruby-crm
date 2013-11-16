@@ -1,0 +1,24 @@
+<h1>Edit Contact</h1>
+<form action="/contacts" method="post">
+  <label for="contact_first_name">First Name:</label><br />
+  <textarea id="contact_first_name" name="contact[first_name]" rows="5"><%= @contact.first_name %></textarea>
+  <br />
+
+  <label for="contact_last_name">Last Name:</label><br />
+  <textarea id="contact_last_name" name="contact[last_name]" rows="5"><%= @contact.last_name %></textarea>
+  <br />
+
+  <label for="contact_email">Email:</label><br />
+  <textarea id="contact_email" name="contact[email]" rows="5"><%= @contact.email %></textarea>
+  <br />
+
+  <label for="contact_phone">Phone Number:</label><br />
+  <textarea id="contact_phone" name="contact[phone]" rows="5"><%= @contact.phone %></textarea>
+  <br />
+
+  <label for="contact_importance">Importance:</label><br />
+  <textarea id="contact_importance" name="contact[importance]" rows="5"><%= @contact.importance %></textarea>
+  <br />
+ 
+  <input type="submit" value="Edit Contact" />
+</form> 

@@ -1,69 +1,65 @@
 class Application
- 
-  def initialize
 
-    @exit_cmd = 'exit'
-    @new_cmd = 'new'
-    @list_cmd = 'list'
-    @list_most_cmd = 'list important'
-    @edit_name_cmd = 'edit name'
-    @add_phone_cmd = 'add phone'
-    @edit_email_cmd = 'edit email'
-    @edit_important_cmd = 'edit importance'
-    @back_cmd = 'back'
-    @phone_cmd = 'phone'
-
-  end
+    EXIT_CMD = 'exit'
+    NEW_CMD = 'new'
+    LIST_CMD = 'list'
+    LIST_IMPORTANT_CMD = 'list important'
+    EDIT_NAME_CMD = 'edit name'
+    ADD_PHONE_CMD = 'add phone'
+    EDIT_EMAIL_CMD = 'edit email'
+    EDIT_IMPORTANT_CMD = 'edit importance'
+    BACK_CMD = 'back'
+    PHONE_CMD = 'phone'
  
   def run
     begin 
-        show_main_menu
-        input = gets.chomp
-        if (input.start_with?"show")
-          show_cmd = input
-        elsif (input.start_with?"delete")
-          delete_cmd = input
-        elsif (input.start_with?"find")
-          find_cmd = input
-        end 
+      show_main_menu
+      input = gets.chomp
+      if (input.start_with?"show")
+        show_cmd = input
+      elsif (input.start_with?"delete")
+        delete_cmd = input
+      elsif (input.start_with?"find")
+        find_cmd = input
+      end 
 
-        case input
-          when (@new_cmd)
-            create_new_card(@new_cmd)
+      case input
+      when (NEW_CMD)
+        create_new_card(NEW_CMD)
 
-          when (@list_cmd)
-            list_cards
+      when (LIST_CMD)
+        list_cards
 
-          when (@list_most_cmd)
-            list_most_important
+      when (LIST_IMPORTANT_CMD)
+        list_most_important
 
-          when (delete_cmd)
-            delete_card(delete_cmd)
+      when (delete_cmd)
+        delete_card(delete_cmd)
 
-          when (find_cmd)
-            find_contact(find_cmd)
-          
-          when (show_cmd)
-            show_card(show_cmd)
-            show_edit_menu
-            begin
-              edit_mode = gets.chomp
-              if (edit_mode == @edit_name_cmd)
-                edit_name(show_cmd)
-              elsif (edit_mode == @edit_email_cmd)
-                edit_email(show_cmd)
-              elsif (edit_mode == @add_phone_cmd)
-                card_index = (show_cmd.split(' '))[1]
-                add_phone_number_to_record(card_index)
-              elsif (edit_mode == @edit_important_cmd)
-                edit_importance(show_cmd)
-                
-              else
-                puts 'Please enter a valid command'
-              end
-            end while (edit_mode != @back_cmd)
-        end      
-    end while (input != @exit_cmd)
+      when (find_cmd)
+        find_contact(find_cmd)
+      
+      when (show_cmd)
+        show_card(show_cmd)
+        show_edit_menu
+        begin
+          edit_mode = gets.chomp
+          if (edit_mode == EDIT_NAME_CMD)
+            edit_name(show_cmd)
+          elsif (edit_mode == EDIT_EMAIL_CMD)
+            edit_email(show_cmd)
+          elsif (edit_mode == ADD_PHONE_CMD)
+            card_index = (show_cmd.split(' '))[1]
+            add_phone_number_to_record(card_index)
+          elsif (edit_mode == EDIT_IMPORTANT_CMD)
+            edit_importance(show_cmd)
+            
+          else
+            puts 'Please enter a valid command'
+          end
+          end while (edit_mode != BACK_CMD)
+      end      
+    end while (input != EXIT_CMD)
   end
   
   # Prints the main menu only
@@ -140,13 +136,13 @@ class Application
 
   def delete_card(delete_command)
     card_index = (delete_command.split(' '))[1]
-      if (Contact.find_by(id: card_index) == nil)
-        puts "The card does not exist!"
-      else
-        card = Contact.find_by(id: card_index)
-        card.destroy
-        puts "Record 3 no longer exists!"
-      end
+    if (Contact.find_by(id: card_index).nil?)
+      puts "The card does not exist!"
+    else
+      card = Contact.find_by(id: card_index)
+      card.destroy
+      puts "Record 3 no longer exists!"
+    end
   end
 
   def edit_name(show_command)

@@ -1,0 +1,17 @@
+<html>
+<head>
+  <title><%= title %></title>
+</head>
+<body>
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About Me</a></li>             
+    <li><a href="/contacts/new">New Contact</a></li>                             
+    <% if contact_show_page?  %>
+      <li><a href="/contacts/<%= @contact.id %>/edit">Edit Contact</a></li>
+      <li><%= delete_contact_button(@contact.id) %></li>
+    <% end %>
+  </ul>
+  <%= yield %>
+</body>
+</html>
